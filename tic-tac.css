@@ -1,0 +1,113 @@
+/* general */
+html {
+    font-size: 100%;
+    font-family: Courier;
+    font-weight: bold;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+header, main, footer {
+    margin: 1rem;
+    padding: 1rem;
+}
+
+section {
+    margin-bottom: 2rem;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    margin: 1rem 0;
+    text-transform: uppercase;
+}
+
+
+
+/* utility */
+.fill-space {
+    height: 100vh;
+}
+
+.hug {
+    display: inline;
+}
+
+.read-me {
+    color: red;
+}
+
+
+
+/* element-specific */
+.spec-list {
+    margin: .25rem;
+    padding: .25rem;  
+}
+.spec-list ul {
+    /*text-align: left;*/
+    text-transform: lowercase;
+    list-style-type: none;
+    list-style-position: inside;
+}
+.spec-list li:before {
+    position: absolute;
+    transform: translateX(-150%);
+    color: red;
+    content: "\0078\0020";
+    text-transform: uppercase;
+}
+
+.button {
+    width: 12.5rem;
+    height: 6.25rem;
+    margin: 2rem 0;
+
+    cursor: pointer;
+    border: 0;
+    outline: none;
+    border-radius: 0.3125rem;
+    background-color: red;
+}
+.button:hover{
+    border: 3px solid black;
+}
+
+#anchor {
+    height: 12.5vh;
+}
+
+.board {
+    height: 75vh;
+    width: 75vh;    
+    margin: 0 auto;
+}
+.row-3 {
+    display: flex;
+    flex-direction: row;
+
+    height: 33.33%;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+}
+.column-3 {
+    width: 33.33%;
+    border-right: 1px solid black;
+    border-left: 1px solid black;
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+.column-3 > div {
+    color: red;
+}
+
+.restart {
+    height: 3.125rem;
+}

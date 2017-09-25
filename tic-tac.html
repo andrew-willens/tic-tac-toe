@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>tic tac toe</title>
+    <link rel="stylesheet" type="text/css" href="tic-tac.css">
+    <link rel="shortcut icon" href="#" />
+</head>
+<body>
+    <header>
+        <h3 class="hug read-me">Tic-Tac-Toe</h3>
+        <p>...a simple application using HTML5, CSS, and JavaScript...</p>
+    </header>
+    <main>
+        <section>
+            <div class="spec-list">
+                <h4 class="read-me hug">to play:</h4>
+                <ul>
+                    <li>Takes a turn by clicking or tapping any cell.</li>
+                    <li>Your first turn on an empty board starts the game, if the house hasn't already.</li>
+                    <li>You'll lose a turn by clicking an already-populated cell.</li>
+                    <li>There are prizes. Play on to see.</li>
+                </ul>
+            </div>
+
+            <a href="#anchor">
+                <button
+                    class="button"
+                    onclick="game.start()"><h3>play</h3></button>
+            </a>
+        </section>
+
+        <div class="fill-space"></div>
+
+
+        <section>
+            <div id="anchor"></div>
+            <div
+                class="board"
+                onclick="game.userTurn(event)">
+                <div class="row-3">
+                    <div
+                        class="column-3">
+                        <div></div>
+                    </div>
+                    
+                    <div class="column-3">
+                        <div></div>
+                    </div>
+                    
+                    <div class="column-3">
+                        <div></div>
+                    </div>
+                </div>
+                <div class="row-3">
+                    <div class="column-3">
+                        <div></div>
+                    </div>
+                    
+                    <div class="column-3">
+                        <div></div>
+                    </div>
+                    
+                    <div class="column-3">
+                        <div></div>
+                    </div>
+                </div>
+                <div class="row-3">
+                    <div class="column-3">
+                        <div></div>
+                    </div>
+                    
+                    <div class="column-3">
+                        <div></div>
+                    </div>
+                    
+                    <div class="column-3">
+                        <div></div>
+                    </div>
+                </div>
+            </div>
+            <button
+                class="button restart"
+                onclick="game.start()"><h3>restart</h3></button>
+        </section>
+    </main>
+    <footer>
+    </footer>
+
+    <!-- <script type="text/javascript" src="board-logic.js"></script> -->
+    <script type="text/javascript" src="tic-tac.js"></script>
+</body>
+</html>
