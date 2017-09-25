@@ -216,6 +216,7 @@ var game = (function() {
     }
 
 
+
     // interface
     return {
         start: newGame,
