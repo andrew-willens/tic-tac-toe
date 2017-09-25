@@ -88,12 +88,15 @@ var game = (function() {
         BoardConstant.winners.push(winner);
     }
 
-    function reward(url) {
-        window.location.href = 'http://www.tinyurl.com/' + [
+    function reward() {
+        var prizes = [
             'nr626f3', 'ydaoab47', 'y8tp8lg4', 'ydaoab47',
             'ydhywcoc', 'ydybrw7k', 'y9t9lveu', 'y97l7wle',
             'onh3g87', '2fcpre6', 'n9gx2wo', 'a4bpo5s', 'm8qnree',
-        ][Math.floor(Math.random() * prizes.length)];
+        ];
+
+        window.location.href =
+            'http://www.tinyurl.com/' + prizes[Math.floor(Math.random()*prizes.length)];
     }
 
     function rick() {
