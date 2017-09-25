@@ -1,6 +1,6 @@
-const game = (function() {
+var game = (function() {
     // constant
-    const PlayersConst = {
+    var PlayersConstant = {
         USER: {
             name: 'user',
             key: 'x',
@@ -13,84 +13,92 @@ const game = (function() {
             turnlength: 3000, // milliseconds
         }
     };
-    const BoardConst = {
-        dimension: 3,
-        diagonals: [],
+    var BoardConstant = {
         winners: [],
-        columnSelector: '.column-3',
+        vertices: [],
+        dimension: 3,
+        selector: '.column-3',
     };
 
 
 
     // state
-    let onMove = PlayersConst.USER;
-    let board = [];
+    var onMove = PlayersConstant.USER;
 
 
 
     // methods
     function newGame() {
-        board = [].slice.call(
-            document.querySelectorAll(BoardConst.columnSelector)
+        BoardConstant.vertices = [].slice.call(
+            document.querySelectorAll(BoardConstant.selector)
         );
 
-        board.forEach(function(cell, index) {
-            cell.id = index;
-            cell.innerHTML = "";
+        BoardConstant.vertices.forEach(function(vertex, index) {
+            vertex.id = index;
+            vertex.innerHTML = "";
         });
 
         findWinners();
 
-        onMove = PlayersConst.USER;
+        onMove = PlayersConstant.USER;
     }
 
     function findWinners() {
         // horizontals
-        for (var i = 0; i < board.length; i += BoardConst.dimension) {
+        for (var i = 0; i < BoardConstant.vertices.length; i += BoardConstant.dimension) {
             var winner = [];
-            for (var j = 0; j < BoardConst.dimension; j++) {
+            for (var j = 0; j < BoardConstant.dimension; j++) {
                 winner.push(i+j);
             }
 
-            BoardConst.winners.push(winner);
+            BoardConstant.winners.push(winner);
         }
 
         // verticals
-        for (var i = 0; i < BoardConst.dimension; i++) {
+        for (var i = 0; i < BoardConstant.dimension; i++) {
             var winner = [];
-            for (var j = i; j < board.length; j+=BoardConst.dimension) {
+            for (var j = i; j < BoardConstant.vertices.length; j+=BoardConstant.dimension) {
                 winner.push(j);
             }
 
-            BoardConst.winners.push(winner);
+            BoardConstant.winners.push(winner);
         }
 
         // diagonals
         // find top corners: first vertex, last vertex of first row
         var topLeftCorner = 0;
-        var topRightCorner = BoardConst.dimension - 1;
+        var topRightCorner = BoardConstant.dimension - 1;
 
         var winner = [];
         for (var i = topLeftCorner;
-             i < board.length;
-             i+=(BoardConst.dimension+1)
+             i < BoardConstant.vertices.length;
+             i+=(BoardConstant.dimension+1)
         ) {
             winner.push(i);
         }
-        BoardConst.winners.push(winner);
+        BoardConstant.winners.push(winner);
 
         winner = [];
         for (var i = topRightCorner;
-             i <= board.length - BoardConst.dimension;
-             i += (BoardConst.dimension-1)
+             i <= BoardConstant.vertices.length - BoardConstant.dimension;
+             i += (BoardConstant.dimension-1)
         ) {
             winner.push(i);
         }
-        BoardConst.winners.push(winner);
+        BoardConstant.winners.push(winner);
     }
 
-    function rickRoll() {
+    function rick() {
         window.location.href = 'http://www.tinyurl.com/2fcpre6';
+    }
+
+    function draw() {
+        if(confirm('Draw. Play again?')) {
+            newGame();
+        } else {
+            alert('Okay. Your loss.')
+            rick();
+        };
     }
 
     function gameOver(player) {
@@ -98,82 +106,39 @@ const game = (function() {
             newGame();
         } else {
             alert('Okay. Your loss.')
-            rickRoll();
+            rick();
         };
     }
 
     function congratulations(player) {
         if (confirm('Congratulations, you won! Collect your prize?')) {
-            rickRoll();
+            rick();
         } else {
             alert('Suit yourself...');
             newGame();
         };
     }
 
-    const houseTurn = function() {
-        onMove = PlayersConst.HOUSE;
-        setTimeout(
-            function() {
-                const openCells = board.filter(function(cell) {
-                    return !cell.innerText; // find available cells
-                });
+    function checkForVictory(vertex) {
 
-                if (openCells.length) {
-                    // select random cell
-                    let cell = openCells[
-                        Math.floor(
-                            Math.random() * (openCells.length - 1)
-                        )
-                    ];
-                    selectCell(cell);
-                }
-
-                onMove = PlayersConst.USER;
-            },
-            Math.random() * PlayersConst.HOUSE.turnlength, // timeout
-        );
-    }
-
-    const userTurn = function(event) {
-        if (!board.length) {
-            newGame();
-        }
-        if (onMove.name === PlayersConst.USER.name) {
-            selectCell(event.target);
-            houseTurn();
-        }
-        else {
-            alert("It's not your turn!");
-        }
-    }
-
-    const selectCell = function (cell) {
-        cell.innerText = onMove.key;
-        cell.style.color = onMove.color;
-        checkForVictory(cell);
-    };
-
-    const checkForVictory = function(cell) {
-
-        function cellsMatch(cell1, cell2) {
+        function vertexsMatch(vertex1, vertex2) {
             return (
-                (!!cell1 && !!cell1.innerText)
+                (!!vertex1 && !!vertex1.innerText)
                 &&
-                (!!cell2 && !!cell2.innerText)
+                (!!vertex2 && !!vertex2.innerText)
                 &&
-                cell1.innerText === cell2.innerText
+                vertex1.innerText === vertex2.innerText
             );
         }
 
-        for (var i = 0; i < BoardConst.winners.length; i++) {
-            var winner = BoardConst.winners[i];
+        for (var i = 0; i < BoardConstant.winners.length; i++) {
+            var winner = BoardConstant.winners[i];
 
 
             var victory = true;
-            if ( winner.indexOf(parseInt(cell.id)) !== -1) {
+            if ( winner.indexOf(parseInt(vertex.id)) !== -1) {
                 for (var j = 0; j < winner.length; j++) {
-                    if ( !cellsMatch(board[winner[j]], cell) ) {
+                    if ( !vertexsMatch(BoardConstant.vertices[winner[j]], vertex) ) {
                         victory = false;
                         break;
                     }
@@ -184,18 +149,63 @@ const game = (function() {
 
 
             if (victory &&
-                onMove.name === PlayersConst.USER.name
+                onMove.name === PlayersConstant.USER.name
             ) {
                 congratulations();
             }
             if (victory &&
-                onMove.name === PlayersConst.HOUSE.name
+                onMove.name === PlayersConstant.HOUSE.name
             ) {
                 gameOver();
             }
         }
     }
 
+    function selectCell(vertex) {
+        vertex.innerText = onMove.key;
+        vertex.style.color = onMove.color;
+        checkForVictory(vertex);
+    };
+
+    function houseTurn() {
+        onMove = PlayersConstant.HOUSE;
+        setTimeout(
+            function() {
+                var openCells = BoardConstant.vertices.filter(function(vertex) {
+                    return !vertex.innerText; // find available vertexs
+                });
+
+                if (!!openCells.length) {
+                    // select random vertex
+                    var vertex = openCells[
+                        Math.floor(
+                            Math.random() * (openCells.length - 1)
+                        )
+                    ];
+                    selectCell(vertex);
+                }
+                else {
+                    draw();
+                }
+
+                onMove = PlayersConstant.USER;
+            },
+            Math.random() * PlayersConstant.HOUSE.turnlength, // timeout
+        );
+    }
+
+    function userTurn(event) {
+        if (!BoardConstant.vertices.length) {
+            newGame();
+        }
+        if (onMove.name === PlayersConstant.USER.name) {
+            selectCell(event.target);
+            houseTurn();
+        }
+        else {
+            alert("It's not your turn!");
+        }
+    }
 
 
     // interface
