@@ -14,9 +14,9 @@ const game = (function() {
         }
     };
     const BoardConst = {
-        rows: 3,
-        columns: 3,
+        dimension: 3,
         diagonals: [],
+        winners: [],
         columnSelector: '.column-3',
     };
 
@@ -29,62 +29,64 @@ const game = (function() {
 
 
     // methods
-    const newGame = function() {
+    function newGame() {
         board = [].slice.call(
             document.querySelectorAll(BoardConst.columnSelector)
         );
 
-
         board.forEach(function(cell, index) {
-            let row;
-            if (index < BoardConst.rows) {
-                row = 1;
-            }
-            else if (index < (BoardConst.rows * 2)) {
-                row = 2;
-            }
-            else if (index < (BoardConst.rows * 3)) {
-                row = 3;
-            }
-
-            let column;
-            if ([0, 3, 6].indexOf(index) !== -1) {
-                column = 1;
-            }
-            else if ([1, 4, 7].indexOf(index) !== -1) {
-                column = 2;
-            }
-            else if ([2, 5, 8].indexOf(index) !== -1) {
-                column = 3;
-            }
-
+            cell.id = index;
             cell.innerHTML = "";
-            cell.id = row.toString() + column.toString();
         });
 
-
-        // build diagonals
-        // topleft <-> bottomright
-        var diagonal = BoardConst.columns + 1;
-        var topleftToBottomright = [];
-        for (var i = 0; i < board.length; i += diagonal) {
-            topleftToBottomright.push(board[i]);
-        }
-        BoardConst.diagonals.push(topleftToBottomright);
-
-        // topright <-> bottomleft
-        diagonal = BoardConst.columns - 1;
-        var toprightToBottomleft = [];
-        for (var i = BoardConst.columns - 1; // start at end of first row
-            i < board.length - diagonal;
-            i += diagonal
-        ) {
-            toprightToBottomleft.push(board[i]);
-        }
-        BoardConst.diagonals.push(toprightToBottomleft);
-
+        findWinners();
 
         onMove = PlayersConst.USER;
+    }
+
+    function findWinners() {
+        // horizontals
+        for (var i = 0; i < board.length; i += BoardConst.dimension) {
+            var winner = [];
+            for (var j = 0; j < BoardConst.dimension; j++) {
+                winner.push(i+j);
+            }
+
+            BoardConst.winners.push(winner);
+        }
+
+        // verticals
+        for (var i = 0; i < BoardConst.dimension; i++) {
+            var winner = [];
+            for (var j = i; j < board.length; j+=BoardConst.dimension) {
+                winner.push(j);
+            }
+
+            BoardConst.winners.push(winner);
+        }
+
+        // diagonals
+        // find top corners: first vertex, last vertex of first row
+        var topLeftCorner = 0;
+        var topRightCorner = BoardConst.dimension - 1;
+
+        var winner = [];
+        for (var i = topLeftCorner;
+             i < board.length;
+             i+=(BoardConst.dimension+1)
+        ) {
+            winner.push(i);
+        }
+        BoardConst.winners.push(winner);
+
+        winner = [];
+        for (var i = topRightCorner;
+             i <= board.length - BoardConst.dimension;
+             i += (BoardConst.dimension-1)
+        ) {
+            winner.push(i);
+        }
+        BoardConst.winners.push(winner);
     }
 
     function rickRoll() {
@@ -153,10 +155,6 @@ const game = (function() {
     };
 
     const checkForVictory = function(cell) {
-        var inARow = 1;
-        var row = cell.id[0];
-        var column = cell.id[1];
-        var cellIndex = ((row - 1) * 3) + (column - 1);
 
         function cellsMatch(cell1, cell2) {
             return (
@@ -168,106 +166,33 @@ const game = (function() {
             );
         }
 
-        function victory() {
-            if (inARow > 2) {
-                if (onMove.name === 'user') {
-                    congratulations();
-                }
-                else if (onMove.name === 'house') {
-                    gameOver();
-                }
-                newGame();
-                return true;
-            }
-            return false;
-        }
+        for (var i = 0; i < BoardConst.winners.length; i++) {
+            var winner = BoardConst.winners[i];
 
-        // check horizontal
-        // left to right
-        for (var i = cellIndex + 1; i < cellIndex + BoardConst.columns; i++) {
-            inARow += cellsMatch(board[i], cell) ? 1 : 0;
-        }
-        if ( victory() ) {
-            if (onMove.name === 'house') {
-                console.log( inARow );
-            }
-            return;
-        }
 
-        // right to left
-        for (var i = cellIndex - 1; i > cellIndex - column; i--) {
-            if (cellsMatch(board[i], cell)) {
-                inARow++;
+            var victory = true;
+            if ( winner.indexOf(parseInt(cell.id)) !== -1) {
+                for (var j = 0; j < winner.length; j++) {
+                    if ( !cellsMatch(board[winner[j]], cell) ) {
+                        victory = false;
+                        break;
+                    }
+                }
             } else {
-                break;
-            }
-        }
-        if ( victory() ) {
-            if (onMove.name === 'house') {
-                console.log( inARow );
-            }
-            return;
-        }
-        inARow = 1;
-
-
-        // check vertical
-        // top to bottom
-        for (var i = cellIndex + BoardConst.rows;
-             i < board.length;
-             i += BoardConst.rows
-        ) {
-            inARow += cellsMatch(board[i], cell) ? 1 : 0;
-        }
-        if ( victory() ) {
-            if (onMove.name === 'house') {
-                console.log( inARow );
-            }
-            return;
-        }
-
-        // bottom to top
-        for (var i = cellIndex - BoardConst.rows;
-             i >= 0;
-             i -= BoardConst.rows
-        ) {
-            inARow += cellsMatch(board[i], cell) ? 1 : 0;
-        }
-        if ( victory() ) {
-            if (onMove.name === 'house') {
-                console.log( inARow );
-            }
-            return;
-        }
-        inARow = 1;
-
-
-        // check diagonals
-        inARow = 0;
-        for (var i = 0; i < BoardConst.diagonals.length; i++) {
-            var diag = BoardConst.diagonals[i];
-
-            var ids = diag.map(function(cell) {
-                return cell.id;
-            });
-            if ( ids.indexOf(cell.id) === -1 ) {
-                inARow = 0;
                 continue;
-            };
-
-            for (var j = 0; j < diag.length; j++) {
-                var diagCell = diag[j];
-
-                inARow += diagCell.innerText === cell.innerText ? 1 : 0;
             }
 
-            if ( victory() ) {
-                return;
-                if (onMove.name === 'house') {
-                    console.log( inARow );
-                }
+
+            if (victory &&
+                onMove.name === PlayersConst.USER.name
+            ) {
+                congratulations();
             }
-            inARow = 0;
+            if (victory &&
+                onMove.name === PlayersConst.HOUSE.name
+            ) {
+                gameOver();
+            }
         }
     }
 
